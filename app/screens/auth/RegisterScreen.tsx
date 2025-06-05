@@ -142,172 +142,174 @@ const RegisterScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.backgroundContainer}>
-          <View style={styles.topBox}>
-            <View style={styles.headerContainer}>
-              <Pressable 
-                style={styles.backButton}
-                onPress={() => navigation.goBack()}
-              >
-                <AntDesign name="arrowleft" size={24} color="#045555" />
-              </Pressable>
-            </View>
-            <View style={styles.logoContainer}>
-              <Text style={styles.logoText}>Create Account</Text>
-            </View>
-          </View>
-          <View style={styles.bottomBox}>
-            <View style={styles.formContainer}>
-              <View style={[styles.inputContainer, errors.phoneNumber && styles.inputError]}>
-                <Feather name="phone" size={20} color="#045555" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Phone Number"
-                  placeholderTextColor="#666"
-                  value={formData.phoneNumber}
-                  onChangeText={(text) => handleInputChange('phoneNumber', text)}
-                  keyboardType="phone-pad"
-                />
-                {errors.phoneNumber && (
-                  <Feather name="alert-circle" size={20} color="#ff3333" style={styles.errorIcon} />
-                )}
-              </View>
-              {errors.phoneNumber && <Text style={styles.errorText}>{errors.phoneNumber}</Text>}
-
-              <View style={[styles.inputContainer, errors.fullName && styles.inputError]}>
-                <Feather name="user" size={20} color="#045555" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Full Name"
-                  placeholderTextColor="#666"
-                  value={formData.fullName}
-                  onChangeText={(text) => handleInputChange('fullName', text)}
-                />
-                {errors.fullName && (
-                  <Feather name="alert-circle" size={20} color="#ff3333" style={styles.errorIcon} />
-                )}
-              </View>
-              {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
-
-              <View style={[styles.inputContainer, errors.estateName && styles.inputError]}>
-                <MaterialIcons name="house" size={20} color="#045555" style={styles.inputIcon} />
-                <Pressable 
-                  style={styles.selectInput}
-                  onPress={() => setShowEstates(!showEstates)}
-                >
-                  <Text style={formData.estateName ? styles.input : styles.placeholderText}>
-                    {formData.estateName || "Select Estate"}
-                  </Text>
-                </Pressable>
-                <MaterialIcons 
-                  name={showEstates ? "keyboard-arrow-up" : "keyboard-arrow-down"} 
-                  size={24} 
-                  color="#045555" 
-                />
-              </View>
-              {showEstates && (
-                <View style={styles.dropdownContainer}>
-                  {ESTATES.map((estate, index) => (
-                    <Pressable
-                      key={index}
-                      style={styles.dropdownItem}
-                      onPress={() => {
-                        handleInputChange('estateName', estate);
-                        setShowEstates(false);
-                      }}
-                    >
-                      <Text style={styles.dropdownText}>{estate}</Text>
-                    </Pressable>
-                  ))}
-                </View>
+      <View style={styles.topBox}>
+        <View style={styles.headerContainer}>
+          <Pressable 
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <AntDesign name="arrowleft" size={24} color="#045555" />
+          </Pressable>
+        </View>
+        <View style={styles.logoContainer}>
+          <Text style={styles.logoText}>Create Account</Text>
+        </View>
+      </View>
+      <ScrollView 
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollViewContent}
+      >
+        <View style={styles.bottomBox}>
+          <View style={styles.formContainer}>
+            <View style={[styles.inputContainer, errors.phoneNumber && styles.inputError]}>
+              <Feather name="phone" size={20} color="#045555" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Phone Number"
+                placeholderTextColor="#666"
+                value={formData.phoneNumber}
+                onChangeText={(text) => handleInputChange('phoneNumber', text)}
+                keyboardType="phone-pad"
+              />
+              {errors.phoneNumber && (
+                <Feather name="alert-circle" size={20} color="#ff3333" style={styles.errorIcon} />
               )}
-              {errors.estateName && <Text style={styles.errorText}>{errors.estateName}</Text>}
+            </View>
+            {errors.phoneNumber && <Text style={styles.errorText}>{errors.phoneNumber}</Text>}
 
-              <View style={[styles.inputContainer, errors.address && styles.inputError]}>
-                <MaterialIcons name="location-on" size={20} color="#045555" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Full House Address"
-                  placeholderTextColor="#666"
-                  value={formData.address}
-                  onChangeText={(text) => handleInputChange('address', text)}
-                  multiline
-                />
-                {errors.address && (
-                  <Feather name="alert-circle" size={20} color="#ff3333" style={styles.errorIcon} />
-                )}
-              </View>
-              {errors.address && <Text style={styles.errorText}>{errors.address}</Text>}
+            <View style={[styles.inputContainer, errors.fullName && styles.inputError]}>
+              <Feather name="user" size={20} color="#045555" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Full Name"
+                placeholderTextColor="#666"
+                value={formData.fullName}
+                onChangeText={(text) => handleInputChange('fullName', text)}
+              />
+              {errors.fullName && (
+                <Feather name="alert-circle" size={20} color="#ff3333" style={styles.errorIcon} />
+              )}
+            </View>
+            {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
 
-              <View style={[styles.inputContainer, errors.ownerName && styles.inputError]}>
-                <MaterialIcons name="person-outline" size={20} color="#045555" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="House Owner Name"
-                  placeholderTextColor="#666"
-                  value={formData.ownerName}
-                  onChangeText={(text) => handleInputChange('ownerName', text)}
-                />
-                {errors.ownerName && (
-                  <Feather name="alert-circle" size={20} color="#ff3333" style={styles.errorIcon} />
-                )}
-              </View>
-              {errors.ownerName && <Text style={styles.errorText}>{errors.ownerName}</Text>}
-
-              <View style={[styles.uploadContainer, errors.idCard && styles.inputError]}>
-                <Pressable style={styles.uploadButton} onPress={pickImage}>
-                  <MaterialIcons name="upload-file" size={24} color="#045555" />
-                  <Text style={styles.uploadText}>Upload Identification Card</Text>
-                </Pressable>
-                {formData.idCard && (
-                  <Image source={{ uri: formData.idCard }} style={styles.previewImage} />
-                )}
-              </View>
-              {errors.idCard && <Text style={styles.errorText}>{errors.idCard}</Text>}
-
-              <View style={[styles.inputContainer, errors.password && styles.inputError]}>
-                <Feather name="lock" size={20} color="#045555" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Password"
-                  placeholderTextColor="#666"
-                  secureTextEntry={!showPassword}
-                  value={formData.password}
-                  onChangeText={(text) => handleInputChange('password', text)}
-                />
-                <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                  <Feather name={showPassword ? "eye" : "eye-off"} size={20} color="#045555" />
-                </Pressable>
-              </View>
-              {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
-
-              <View style={[styles.inputContainer, errors.confirmPassword && styles.inputError]}>
-                <Feather name="lock" size={20} color="#045555" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Confirm Password"
-                  placeholderTextColor="#666"
-                  secureTextEntry={!showPassword}
-                  value={formData.confirmPassword}
-                  onChangeText={(text) => handleInputChange('confirmPassword', text)}
-                />
-              </View>
-              {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
-
+            <View style={[styles.inputContainer, errors.estateName && styles.inputError]}>
+              <MaterialIcons name="house" size={20} color="#045555" style={styles.inputIcon} />
               <Pressable 
-                style={styles.registerButton}
-                onPress={handleRegister}
+                style={styles.selectInput}
+                onPress={() => setShowEstates(!showEstates)}
               >
-                <Text style={styles.registerButtonText}>Register</Text>
+                <Text style={formData.estateName ? styles.input : styles.placeholderText}>
+                  {formData.estateName || "Select Estate"}
+                </Text>
               </Pressable>
-
-              <View style={styles.loginContainer}>
-                <Text style={styles.loginText}>Already have an account? </Text>
-                <Pressable onPress={() => navigation.goBack()}>
-                  <Text style={styles.loginLink}>Login</Text>
-                </Pressable>
+              <MaterialIcons 
+                name={showEstates ? "keyboard-arrow-up" : "keyboard-arrow-down"} 
+                size={24} 
+                color="#045555" 
+              />
+            </View>
+            {showEstates && (
+              <View style={styles.dropdownContainer}>
+                {ESTATES.map((estate, index) => (
+                  <Pressable
+                    key={index}
+                    style={styles.dropdownItem}
+                    onPress={() => {
+                      handleInputChange('estateName', estate);
+                      setShowEstates(false);
+                    }}
+                  >
+                    <Text style={styles.dropdownText}>{estate}</Text>
+                  </Pressable>
+                ))}
               </View>
+            )}
+            {errors.estateName && <Text style={styles.errorText}>{errors.estateName}</Text>}
+
+            <View style={[styles.inputContainer, errors.address && styles.inputError]}>
+              <MaterialIcons name="location-on" size={20} color="#045555" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Full House Address"
+                placeholderTextColor="#666"
+                value={formData.address}
+                onChangeText={(text) => handleInputChange('address', text)}
+                multiline
+              />
+              {errors.address && (
+                <Feather name="alert-circle" size={20} color="#ff3333" style={styles.errorIcon} />
+              )}
+            </View>
+            {errors.address && <Text style={styles.errorText}>{errors.address}</Text>}
+
+            <View style={[styles.inputContainer, errors.ownerName && styles.inputError]}>
+              <MaterialIcons name="person-outline" size={20} color="#045555" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="House Owner Name"
+                placeholderTextColor="#666"
+                value={formData.ownerName}
+                onChangeText={(text) => handleInputChange('ownerName', text)}
+              />
+              {errors.ownerName && (
+                <Feather name="alert-circle" size={20} color="#ff3333" style={styles.errorIcon} />
+              )}
+            </View>
+            {errors.ownerName && <Text style={styles.errorText}>{errors.ownerName}</Text>}
+
+            <View style={[styles.uploadContainer, errors.idCard && styles.inputError]}>
+              <Pressable style={styles.uploadButton} onPress={pickImage}>
+                <MaterialIcons name="upload-file" size={24} color="#045555" />
+                <Text style={styles.uploadText}>Upload Identification Card</Text>
+              </Pressable>
+              {formData.idCard && (
+                <Image source={{ uri: formData.idCard }} style={styles.previewImage} />
+              )}
+            </View>
+            {errors.idCard && <Text style={styles.errorText}>{errors.idCard}</Text>}
+
+            <View style={[styles.inputContainer, errors.password && styles.inputError]}>
+              <Feather name="lock" size={20} color="#045555" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Password"
+                placeholderTextColor="#666"
+                secureTextEntry={!showPassword}
+                value={formData.password}
+                onChangeText={(text) => handleInputChange('password', text)}
+              />
+              <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+                <Feather name={showPassword ? "eye" : "eye-off"} size={20} color="#045555" />
+              </Pressable>
+            </View>
+            {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+
+            <View style={[styles.inputContainer, errors.confirmPassword && styles.inputError]}>
+              <Feather name="lock" size={20} color="#045555" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Confirm Password"
+                placeholderTextColor="#666"
+                secureTextEntry={!showPassword}
+                value={formData.confirmPassword}
+                onChangeText={(text) => handleInputChange('confirmPassword', text)}
+              />
+            </View>
+            {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
+
+            <Pressable 
+              style={styles.registerButton}
+              onPress={handleRegister}
+            >
+              <Text style={styles.registerButtonText}>Register</Text>
+            </Pressable>
+
+            <View style={styles.loginContainer}>
+              <Text style={styles.loginText}>Already have an account? </Text>
+              <Pressable onPress={() => navigation.goBack()}>
+                <Text style={styles.loginLink}>Login</Text>
+              </Pressable>
             </View>
           </View>
         </View>
@@ -319,11 +321,20 @@ const RegisterScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#045555',
   },
-  backgroundContainer: {
-    position: 'absolute',
-    width: width,
-    height: height,
+  scrollView: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    paddingBottom: 40,
+  },
+  topBox: {
+    height: height * 0.2,
+    backgroundColor: '#045555',
+    borderBottomRightRadius: 50,
   },
   headerContainer: {
     padding: 16,
@@ -346,7 +357,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   logoContainer: {
-    padding: 16,
+    padding: 14,
     alignItems: 'center',
     alignContent: 'center',
     justifyContent: 'center',
@@ -356,19 +367,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
   },
-  topBox: {
-    height: height * 0.35,
-    backgroundColor: '#045555',
-    borderBottomRightRadius: 50,
-  },
   bottomBox: {
-    height: height * 0.65,
     backgroundColor: '#fff',
-    padding: 16,
-    width: width * 0.9,
-    alignSelf: 'center',
+    marginTop: 20,
+    marginHorizontal: 20,
     borderRadius: 20,
-    marginTop: -150,
+    paddingVertical: 20,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -452,9 +456,6 @@ const styles = StyleSheet.create({
     color: '#045555',
     fontSize: 14,
     fontWeight: 'bold',
-  },
-  scrollView: {
-    flex: 1,
   },
   selectInput: {
     flex: 1,

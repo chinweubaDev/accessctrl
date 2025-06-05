@@ -1,17 +1,19 @@
 import { AntDesign, Entypo, Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import React, { useState } from 'react';
-import { Dimensions, Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import * as LocalAuthentication from 'expo-local-authentication';
+import React, { useEffect, useState } from 'react';
+import { Alert, Dimensions, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 type RootStackParamList = {
+  Splash: undefined;
   Login: undefined;
   Register: undefined;
   ForgotPassword: undefined;
-  Splash: undefined;
+  Dashboard: undefined;
 };
 
-type NavigationProp = StackNavigationProp<RootStackParamList>;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const { width, height } = Dimensions.get('window');
 
@@ -19,12 +21,41 @@ const LoginScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const [showPassword, setShowPassword] = useState(false);
   const [isFingerPressed, setIsFingerPressed] = useState(false);
+  const [isBiometricSupported, setIsBiometricSupported] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({
     username: '',
     password: '',
   });
+
+  // Check if device supports biometric authentication
+  useEffect(() => {
+    (async () => {
+      const compatible = await LocalAuthentication.hasHardwareAsync();
+      setIsBiometricSupported(compatible);
+    })();
+  }, []);
+
+  const handleBiometricAuth = async () => {
+    try {
+      const biometricAuth = await LocalAuthentication.authenticateAsync({
+        promptMessage: 'Login with Fingerprint',
+        disableDeviceFallback: true,
+        cancelLabel: 'Cancel',
+      });
+      
+      if (biometricAuth.success) {
+        // Proceed with biometric login
+        console.log('Fingerprint authentication successful');
+        // Add your login logic here
+      } else {
+        Alert.alert('Authentication Failed', 'Please try again or use password');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'An error occurred during authentication');
+    }
+  };
 
   const validateInputs = () => {
     let isValid = true;
@@ -51,7 +82,12 @@ const LoginScreen = () => {
     if (validateInputs()) {
       // Proceed with sign in
       console.log('Sign in successful');
+      navigation.navigate('Dashboard');
     }
+  };
+
+  const handleNavigation = (screen: keyof RootStackParamList) => {
+    navigation.navigate(screen);
   };
 
   return (
@@ -59,12 +95,13 @@ const LoginScreen = () => {
       <View style={styles.backgroundContainer}>
         <View style={styles.topBox}>
           <View style={styles.headerContainer}>
-            <Pressable 
+            <TouchableOpacity 
               style={styles.backButton}
+              activeOpacity={0.7}
               onPress={() => navigation.goBack()}
             >
               <AntDesign name="arrowleft" size={24} color="#045555" />
-            </Pressable>
+            </TouchableOpacity>
           </View>
           <View style={styles.logoContainer}>
             <Text style={styles.logoText}>Welcome Back! 👋</Text>
@@ -107,44 +144,57 @@ const LoginScreen = () => {
                   }
                 }}
               />
-              <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
                 <Feather name={showPassword ? "eye" : "eye-off"} size={20} color="#045555" />
-              </Pressable>
+              </TouchableOpacity>
             </View>
             {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
             <View style={styles.forgotPasswordContainer}>
-              <Pressable onPress={() => navigation.navigate('ForgotPassword')}>
+              <TouchableOpacity 
+                activeOpacity={0.7}
+                onPress={() => handleNavigation('ForgotPassword')}
+              >
                 <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
 
             <View style={styles.buttonContainer}>
-              <Pressable 
+              <TouchableOpacity 
                 style={styles.signInButton}
+                activeOpacity={0.7}
                 onPress={handleSignIn}
               >
                 <Text style={styles.signInText}>Sign In</Text>
-              </Pressable>
+              </TouchableOpacity>
               
-              <Pressable 
-                style={[styles.fingerprintButton, isFingerPressed && styles.fingerprintButtonPressed]}
-                onPressIn={() => setIsFingerPressed(true)}
-                onPressOut={() => setIsFingerPressed(false)}
-              >
-                <Entypo 
-                  name="fingerprint" 
-                  size={isFingerPressed ? 88 : 44} 
-                  color={isFingerPressed ? '#ff0000' : '#045555'} 
-                />
-              </Pressable>
+              {isBiometricSupported && (
+                <TouchableOpacity 
+                  style={[styles.fingerprintButton, isFingerPressed && styles.fingerprintButtonPressed]}
+                  activeOpacity={0.7}
+                  onPressIn={() => setIsFingerPressed(true)}
+                  onPressOut={() => {
+                    setIsFingerPressed(false);
+                    handleBiometricAuth();
+                  }}
+                >
+                  <Entypo 
+                    name="fingerprint" 
+                    size={isFingerPressed ? 88 : 44} 
+                    color={isFingerPressed ? '#ff0000' : '#045555'} 
+                  />
+                </TouchableOpacity>
+              )}
             </View>
 
             <View style={styles.registerContainer}>
               <Text style={styles.registerText}>Don't have an account? </Text>
-              <Pressable onPress={() => navigation.navigate('Register')}>
+              <TouchableOpacity 
+                activeOpacity={0.7}
+                onPress={() => handleNavigation('Register')}
+              >
                 <Text style={styles.registerLink}>Register</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           </View>
         </View>

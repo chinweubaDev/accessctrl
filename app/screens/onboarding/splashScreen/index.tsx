@@ -36,7 +36,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
       <View style={styles.bottomBox}>
         <View style={styles.boxRow}> 
           <View style={styles.bottomBoxItem}>
-            <Pressable onPress={() => navigation.replace('Login')}>
+            <Pressable onPress={() => navigation.navigate('Login')}>
               <Text style={styles.buttonText}>Get Started</Text>
             </Pressable>
           </View>

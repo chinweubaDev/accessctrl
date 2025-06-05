@@ -207,9 +207,7 @@ const ForgotPasswordScreen = () => {
               <AntDesign name="arrowleft" size={24} color="#045555" />
             </Pressable>
           </View>
-          <View style={styles.logoContainer}>
-            <Text style={styles.logoText}>Forgot Password</Text>
-          </View>
+          
         </View>
         <View style={styles.bottomBox}>
           <View style={styles.formContainer}>
@@ -266,16 +264,17 @@ const styles = StyleSheet.create({
   topBox: {
     height: height * 0.35,
     backgroundColor: '#045555',
+
     borderBottomRightRadius: 50,
   },
   bottomBox: {
-    minHeight: height * 0.65,
+    minHeight: height * 0.55,
     backgroundColor: '#fff',
     padding: 16,
     width: width * 0.9,
     alignSelf: 'center',
     borderRadius: 20,
-    marginTop: -150,
+    marginTop: -120,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
