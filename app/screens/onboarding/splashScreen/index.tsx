@@ -1,83 +1,116 @@
-import React, { useEffect } from 'react';
-import { Dimensions, Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import Animated, {
-    Easing,
-    useAnimatedStyle,
-    useSharedValue,
-    withRepeat,
-    withTiming
-} from 'react-native-reanimated';
+import { StackNavigationProp } from '@react-navigation/stack';
+import React from 'react';
+import { Dimensions, Image, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { onboardingImages } from '../../../constants/images';
 
+// Get the window width for responsive design
 const { width } = Dimensions.get('window');
 
-const SplashScreen = () => {
-    const translateX = useSharedValue(0);
+// Define navigation type for this screen
+type SplashScreenNavigationProp = StackNavigationProp<any, 'Splash'>;
 
-    useEffect(() => {
-        translateX.value = withRepeat(
-            withTiming(-width * (onboardingImages.length - 1), {
-                duration: 3000,
-                easing: Easing.inOut(Easing.ease),
-            }),
-            -1,
-            true
-        );
-    }, []);
+interface SplashScreenProps {
+  navigation: SplashScreenNavigationProp;
+}
 
-    const animatedStyle = useAnimatedStyle(() => {
-        return {
-            transform: [{ translateX: translateX.value }],
-        };
-    });
+const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
+//   useEffect(() => {
+//     const timer = setTimeout(() => {
+//       navigation.replace('login');
+//     },6000);
 
-    return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.sliderContainer}>
-                <Animated.View style={[styles.slider, animatedStyle]}>
-                    {onboardingImages.map((image, index) => (
-                        <View key={index} style={styles.imageContainer}>
-                            <Image source={image} style={styles.image} resizeMode="contain" />
-                        </View>
-                    ))}
-                </Animated.View>
-            </View>
-            <Text style={styles.title}>Access Control</Text>
-        </SafeAreaView>
-    );
+//     return () => clearTimeout(timer);
+//   }, [navigation]);
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.sliderContainer}>
+        <Image source={onboardingImages[0]} style={styles.image} resizeMode="cover" />
+      </View>
+
+      <Text style={styles.title}>Redefining Security Systems</Text>
+      <Text style={styles.subTitle}>
+        All in one security solution, Get Pass Code, Pay Estate Dues, Buy Electricity, Buy airtime, Buy Data and more
+      </Text>
+      
+      <View style={styles.bottomBox}>
+        <View style={styles.boxRow}> 
+          <View style={styles.bottomBoxItem}>
+            <Pressable onPress={() => navigation.replace('Login')}>
+              <Text style={styles.buttonText}>Get Started</Text>
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    sliderContainer: {
-        height: 200,
-        overflow: 'hidden',
-    },
-    slider: {
-        flexDirection: 'row',
-        height: '100%',
-    },
-    imageContainer: {
-        width: width,
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    image: {
-        width: width * 0.8,
-        height: '80%',
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginTop: 20,
-        color: '#333',
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sliderContainer: {
+    height: 400,
+    overflow: 'hidden',
+  },
+  slider: {
+    flexDirection: 'row',
+    height: '100%',
+  },
+  imageContainer: {
+    width: width,
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    width: width,
+    height: '100%',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginTop: 20,
+    color: '#fff',
+  },
+  subTitle: {
+    fontSize: 14,
+    paddingHorizontal: 20,
+    alignContent: 'center',
+    fontWeight: 'normal',
+    marginTop: 20,
+    color: '#fff',
+    textAlign: 'center',
+  },
+  bottomBox: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  boxRow: {
+    flex: 1,
+    flexDirection: 'row',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bottomBoxItem: {
+    borderRadius: 10,
+    height: 50,
+    padding: 15,
+    marginTop: 20,
+    backgroundColor: '#04a3a3',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
 
 export default SplashScreen;

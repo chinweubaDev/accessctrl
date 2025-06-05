@@ -1,7 +1,5 @@
 export const onboardingImages = [
-    require('../../../../assets/images/splash1.jpg'),
-    require('../assets/images/spalsh1.jpg'),
-    require('../../../../assets/images/splash1.jpg'),
+    require('../../assets/images/spalshaccess.gif'),
 
 ];
 
