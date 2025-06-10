@@ -1,8 +1,10 @@
 import { AntDesign, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useCallback, useState } from 'react';
 import {
   Dimensions,
+  Platform,
   RefreshControl,
   SafeAreaView,
   ScrollView,
@@ -15,48 +17,96 @@ import {
 
 const { width, height } = Dimensions.get('window');
 
-const QUICK_SERVICES = [
+type RootStackParamList = {
+  GatePass: undefined;
+  EstateDues: undefined;
+  AirtimeData: undefined;
+  Emergency: undefined;
+  Announcements: undefined;
+  Electricity: undefined;
+  ProfileSettings: undefined;
+  SubmitComplaint: undefined;
+  TransactionHistory: undefined;
+  Notifications: undefined;
+};
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+interface QuickService {
+  id: string;
+  name: string;
+  icon: string;
+  iconFamily: 'Feather' | 'MaterialCommunityIcons';
+  screen: keyof RootStackParamList;
+}
+
+const QUICK_SERVICES: QuickService[] = [
   {
     id: '1',
-    name: 'GatePass',
-    icon: 'send',
+    name: 'Gate Pass',
+    icon: 'key',
     iconFamily: 'Feather',
+    screen: 'GatePass',
   },
   {
     id: '2',
-    name: 'Pay Bills',
-    icon: 'receipt',
-    iconFamily: 'MaterialCommunityIcons',
+    name: 'Estate Dues',
+    icon: 'credit-card',
+    iconFamily: 'Feather',
+    screen: 'EstateDues',
   },
   {
     id: '3',
-    name: 'Buy Airtime',
+    name: 'Airtime/Data',
     icon: 'phone',
     iconFamily: 'Feather',
+    screen: 'AirtimeData',
   },
   {
     id: '4',
-    name: 'Submit Complaint',
-    icon: 'trending-up',
+    name: 'Emergency',
+    icon: 'alert-circle',
     iconFamily: 'Feather',
+    screen: 'Emergency',
+  },
+  {
+    id: '5',
+    name: 'Announcements',
+    icon: 'bell',
+    iconFamily: 'Feather',
+    screen: 'Announcements',
+  },
+  {
+    id: '6',
+    name: 'Electricity',
+    icon: 'zap',
+    iconFamily: 'Feather',
+    screen: 'Electricity',
+  },
+  {
+    id: '7',
+    name: 'Submit Complaint',
+    icon: 'zap',
+    iconFamily: 'Feather',
+    screen: 'SubmitComplaint',
   },
 ];
 
 const DashboardScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
   const [showBalance, setShowBalance] = useState(true);
-  const [balance] = useState(50000); // This would come from your backend
+  const [balance] = useState(50000); 
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    // Simulate data fetching
+
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);
   }, []);
 
-  const renderIcon = (service: typeof QUICK_SERVICES[0]) => {
+  const renderIcon = (service: QuickService) => {
     if (service.iconFamily === 'Feather') {
       return <Feather name={service.icon as any} size={24} color="#045555" />;
     }
@@ -85,16 +135,26 @@ const DashboardScreen = () => {
         <View style={styles.topBox}>
           <View style={styles.header}>
             <View style={styles.userInfo}>
-              <Text style={styles.greeting}>Hello, John 👋</Text>
+              <Text style={styles.greeting}>Hello, Simeon 👋</Text>
               <Text style={styles.welcomeText}>Welcome back</Text>
             </View>
-            <TouchableOpacity 
-              style={styles.notificationButton}
-              activeOpacity={0.7}
-            >
-              <Feather name="bell" size={24} color="#fff" />
-              <View style={styles.notificationBadge} />
-            </TouchableOpacity>
+            <View style={styles.headerButtons}>
+              <TouchableOpacity 
+                style={styles.notificationButton}
+                activeOpacity={0.7}
+                onPress={() => navigation.navigate('Notifications')}
+              >
+                <Feather name="bell" size={24} color="#fff" />
+                <View style={styles.notificationBadge} />
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.notificationButton}
+                activeOpacity={0.7}
+                onPress={() => navigation.navigate('ProfileSettings')}
+              >
+                <Feather name="user" size={24} color="#fff" />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View style={styles.balanceContainer}>
@@ -131,6 +191,7 @@ const DashboardScreen = () => {
                 key={service.id}
                 style={styles.serviceCard}
                 activeOpacity={0.7}
+                onPress={() => navigation.navigate(service.screen)}
               >
                 <View style={styles.serviceIconContainer}>
                   {renderIcon(service)}
@@ -143,7 +204,7 @@ const DashboardScreen = () => {
           <View style={styles.recentTransactions}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Recent Transactions</Text>
-              <TouchableOpacity activeOpacity={0.7}>
+              <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('TransactionHistory')}>
                 <Text style={styles.viewAllText}>View All</Text>
               </TouchableOpacity>
             </View>
@@ -238,6 +299,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
+    ...Platform.select({
+      ios: {
+        boxShadow: '0px 2px 3.84px rgba(0, 0, 0, 0.1)',
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
   fundButtonText: {
     fontSize: 16,
@@ -271,14 +340,14 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    ...Platform.select({
+      ios: {
+        boxShadow: '0px 2px 3.84px rgba(0, 0, 0, 0.1)',
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
   serviceIconContainer: {
     width: 48,
@@ -298,14 +367,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 16,
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    ...Platform.select({
+      ios: {
+        boxShadow: '0px 2px 3.84px rgba(0, 0, 0, 0.1)',
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -317,6 +386,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#045555',
     fontWeight: '600',
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
 });
 

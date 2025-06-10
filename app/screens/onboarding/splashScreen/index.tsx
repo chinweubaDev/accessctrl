@@ -1,7 +1,7 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import { Dimensions, Image, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import { onboardingImages } from '../../../constants/images';
+import images from '../../../constants/images';
 
 // Get the window width for responsive design
 const { width } = Dimensions.get('window');
@@ -25,7 +25,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.sliderContainer}>
-        <Image source={onboardingImages[0]} style={styles.image} resizeMode="cover" />
+        <Image source={images.splash} style={styles.image} resizeMode="cover" />
       </View>
 
       <Text style={styles.title}>Redefining Security Systems</Text>
@@ -38,7 +38,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
           <View style={styles.bottomBoxItem}>
             <Pressable onPress={() => navigation.navigate('Login')}>
               <Text style={styles.buttonText}>Get Started</Text>
-            </Pressable>
+            </Pressable> 
           </View>
         </View>
       </View>
