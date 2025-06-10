@@ -8,6 +8,7 @@ const images = {
   aedc: require('../../assets/images/AEDC.jpg'),
   phedc: require('../../assets/images/PHEDC.jpg'),
   splash: require('../../assets/images/spalshaccess.gif'),
+  logo: require('../../assets/images/Access Control 2.png')
 };
 
 export default images; 

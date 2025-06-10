@@ -28,6 +28,16 @@ type RootStackParamList = {
   SubmitComplaint: undefined;
   TransactionHistory: undefined;
   Notifications: undefined;
+  Dashboard: undefined;
+  SecurityDashboard: undefined;
+  EstateAdminDashboard: undefined;
+  ApproveVisitors: undefined;
+  ViewComplaints: undefined;
+  ManageSecurity: undefined;
+  SendNotice: undefined;
+  PaymentHistory: undefined;
+  GenerateReports: undefined;
+  CableTV: undefined;
 };
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -86,9 +96,16 @@ const QUICK_SERVICES: QuickService[] = [
   {
     id: '7',
     name: 'Submit Complaint',
-    icon: 'zap',
+    icon: 'message-square',
     iconFamily: 'Feather',
     screen: 'SubmitComplaint',
+  },
+  {
+    id: '8',
+    name: 'Cable TV',
+    icon: 'tv',
+    iconFamily: 'Feather',
+    screen: 'CableTV',
   },
 ];
 
@@ -335,10 +352,10 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   serviceCard: {
-    width: (width - 60) / 2,
+    width: (width - 80) / 3,
     backgroundColor: '#fff',
     borderRadius: 16,
-    padding: 20,
+    padding: 16,
     marginBottom: 16,
     ...Platform.select({
       ios: {
@@ -359,7 +376,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   serviceName: {
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: '600',
     color: '#333',
   },

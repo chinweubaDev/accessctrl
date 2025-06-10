@@ -1,144 +1,127 @@
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React from 'react';
 import {
-    Alert,
-    Image,
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
+
+const menuItems = [
+  {
+    id: 'edit_profile',
+    title: 'Edit Profile',
+    icon: 'user',
+    screen: 'EditProfile',
+  },
+  {
+    id: 'change_password',
+    title: 'Change Password',
+    icon: 'lock',
+    screen: 'ChangePassword',
+  },
+  {
+    id: 'change_pin',
+    title: 'Change PIN',
+    icon: 'key',
+    screen: 'ChangePin',
+  },
+  {
+    id: 'security',
+    title: 'Security Settings',
+    icon: 'shield',
+    screen: 'SecuritySettings',
+  },
+  {
+    id: 'about',
+    title: 'About',
+    icon: 'info',
+    screen: 'About',
+  },
+  {
+    id: 'logout',
+    title: 'Logout',
+    icon: 'log-out',
+    screen: 'logout',
+  },
+];
 
 const ProfileSettingsScreen = () => {
   const navigation = useNavigation();
-  const [profileImage] = useState(null); // This would be fetched from your backend
 
-  const settingsOptions = [
-    {
-      id: '1',
-      title: 'Edit Profile',
-      icon: 'user',
-      onPress: () => {},
-    },
-    {
-      id: '2',
-      title: 'Change Password',
-      icon: 'lock',
-      onPress: () => {},
-    },
-    {
-      id: '3',
-      title: 'Notifications',
-      icon: 'bell',
-      onPress: () => {},
-    },
-    {
-      id: '4',
-      title: 'Security',
-      icon: 'shield',
-      onPress: () => {},
-    },
-    {
-      id: '5',
-      title: 'Help & Support',
-      icon: 'help-circle',
-      onPress: () => {},
-    },
-    {
-      id: '6',
-      title: 'About',
-      icon: 'info',
-      onPress: () => {},
-    },
-  ];
-
-  const handleLogout = () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Logout',
-          style: 'destructive',
-          onPress: () => {
-            // Handle logout logic here
-          },
-        },
-      ],
-      { cancelable: true }
-    );
+  const handleMenuPress = (screen: string) => {
+    if (screen === 'logout') {
+      // Handle logout
+      return;
+    }
+    navigation.navigate(screen as never);
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#045555" />
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Feather name="arrow-left" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Profile Settings</Text>
-        <View style={styles.placeholder} />
+        <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.profileSection}>
-          <View style={styles.imageContainer}>
-            {profileImage ? (
-              <Image source={{ uri: profileImage }} style={styles.profileImage} />
-            ) : (
-              <View style={styles.profileImagePlaceholder}>
-                <Feather name="user" size={40} color="#045555" />
-              </View>
-            )}
-            <TouchableOpacity style={styles.editImageButton}>
-              <Feather name="camera" size={16} color="#fff" />
-            </TouchableOpacity>
-          </View>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Profile Header */}
+        <View style={styles.profileHeader}>
+          <TouchableOpacity 
+            style={styles.profileImageContainer}
+            onPress={() => navigation.navigate('EditProfile' as never)}
+          >
+            <Image
+              source={{ uri: 'https://via.placeholder.com/100' }}
+              style={styles.profileImage}
+            />
+            <View style={styles.editIconContainer}>
+              <Feather name="edit-2" size={12} color="#fff" />
+            </View>
+          </TouchableOpacity>
           <Text style={styles.userName}>John Doe</Text>
-          <Text style={styles.userEmail}>john.doe@example.com</Text>
+          <Text style={styles.userEmail}>johndoe@example.com</Text>
         </View>
 
-        <View style={styles.settingsContainer}>
-          {settingsOptions.map((option) => (
+        {/* Menu Items */}
+        <View style={styles.menuContainer}>
+          {menuItems.map((item) => (
             <TouchableOpacity
-              key={option.id}
-              style={styles.settingItem}
-              onPress={option.onPress}
+              key={item.id}
+              style={styles.menuItem}
+              onPress={() => handleMenuPress(item.screen)}
             >
-              <View style={styles.settingItemLeft}>
-                <View style={styles.iconContainer}>
-                  <Feather name={option.icon as any} size={20} color="#045555" />
+              <View style={styles.menuItemLeft}>
+                <View style={styles.menuIconContainer}>
+                  <Feather name={item.icon as any} size={20} color="#045555" />
                 </View>
-                <Text style={styles.settingTitle}>{option.title}</Text>
+                <Text style={styles.menuItemTitle}>{item.title}</Text>
               </View>
-              <Feather name="chevron-right" size={20} color="#666" />
+              <Feather 
+                name="chevron-right" 
+                size={20} 
+                color={item.id === 'logout' ? '#FF4444' : '#666'} 
+              />
             </TouchableOpacity>
           ))}
         </View>
-
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Feather name="log-out" size={20} color="#FF4444" />
-          <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
     backgroundColor: '#045555',
   },
@@ -146,37 +129,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-    paddingBottom: 20,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: 20,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 20,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#fff',
   },
-  placeholder: {
-    width: 40,
-  },
-  container: {
+  content: {
     flex: 1,
     backgroundColor: '#f8f9fa',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
   },
-  profileSection: {
+  profileHeader: {
     alignItems: 'center',
-    paddingVertical: 30,
+    padding: 20,
+    paddingTop: 30,
   },
-  imageContainer: {
+  profileImageContainer: {
     position: 'relative',
     marginBottom: 16,
   },
@@ -184,23 +156,17 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
+    borderWidth: 3,
+    borderColor: '#fff',
   },
-  profileImagePlaceholder: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#E8E8E8',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  editImageButton: {
+  editIconContainer: {
     position: 'absolute',
     bottom: 0,
     right: 0,
     backgroundColor: '#045555',
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
@@ -213,83 +179,49 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   userEmail: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#666',
   },
-  settingsContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    marginHorizontal: 20,
-    padding: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 3.84,
-      },
-      android: {
-        elevation: 5,
-      },
-    }),
+  menuContainer: {
+    padding: 20,
   },
-  settingItem: {
+  menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
   },
-  settingItemLeft: {
+  menuItemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  iconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+  menuIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: 'rgba(4, 85, 85, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
-  settingTitle: {
+  menuItemTitle: {
     fontSize: 16,
     color: '#333',
-  },
-  logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-    marginHorizontal: 20,
-    marginVertical: 30,
-    padding: 16,
-    borderRadius: 12,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 3.84,
-      },
-      android: {
-        elevation: 5,
-      },
-    }),
-  },
-  logoutText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FF4444',
-    marginLeft: 8,
+    fontWeight: '500',
   },
 });
 

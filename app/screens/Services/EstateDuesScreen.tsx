@@ -2,186 +2,214 @@ import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import {
-    FlatList,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  Dimensions,
+  Modal,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
-interface DueCategory {
-  id: string;
-  name: string;
-  amount: number;
-  dueDate: string;
-  status: 'paid' | 'pending' | 'overdue';
-}
+const { width } = Dimensions.get('window');
 
-interface Transaction {
-  id: string;
-  type: string;
-  amount: number;
-  date: string;
-  status: 'successful' | 'pending' | 'failed';
-}
-
-const dueCategories: DueCategory[] = [
+const dues = [
   {
     id: '1',
-    name: 'Monthly Service Charge',
-    amount: 25000,
+    title: 'Monthly Service Charge',
+    amount: 15000,
     dueDate: '2024-07-01',
     status: 'pending',
   },
   {
     id: '2',
-    name: 'Security Levy',
-    amount: 15000,
+    title: 'Security Levy',
+    amount: 25000,
+    dueDate: '2024-07-01',
+    status: 'pending',
+  },
+  {
+    id: '3',
+    title: 'Infrastructure Development',
+    amount: 50000,
+    dueDate: '2024-12-31',
+    status: 'pending',
+  },
+  {
+    id: '4',
+    title: 'Waste Management',
+    amount: 5000,
     dueDate: '2024-07-01',
     status: 'paid',
   },
   {
-    id: '3',
-    name: 'Infrastructure Development',
-    amount: 50000,
-    dueDate: '2024-06-15',
-    status: 'overdue',
-  },
-];
-
-const transactions: Transaction[] = [
-  {
-    id: '1',
-    type: 'Security Levy',
-    amount: 15000,
-    date: '2024-06-01',
-    status: 'successful',
-  },
-  {
-    id: '2',
-    type: 'Monthly Service Charge',
-    amount: 25000,
-    date: '2024-05-01',
-    status: 'successful',
-  },
-  {
-    id: '3',
-    type: 'Infrastructure Development',
-    amount: 50000,
-    date: '2024-04-15',
-    status: 'successful',
+    id: '5',
+    title: 'Street Lighting',
+    amount: 10000,
+    dueDate: '2024-07-01',
+    status: 'paid',
   },
 ];
 
 const EstateDuesScreen = () => {
   const navigation = useNavigation();
-  const [selectedCategory, setSelectedCategory] = useState<DueCategory | null>(null);
+  const [selectedDues, setSelectedDues] = useState<string[]>([]);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [paymentAmount, setPaymentAmount] = useState(0);
 
-  const getStatusColor = (status: DueCategory['status'] | Transaction['status']) => {
-    switch (status) {
-      case 'paid':
-      case 'successful':
-        return '#4CAF50';
-      case 'pending':
-        return '#FF9800';
-      case 'overdue':
-      case 'failed':
-        return '#F44336';
-      default:
-        return '#333';
-    }
+  const toggleDueSelection = (dueId: string) => {
+    setSelectedDues(prev =>
+      prev.includes(dueId)
+        ? prev.filter(id => id !== dueId)
+        : [...prev, dueId]
+    );
   };
 
-  const renderDueCategory = ({ item }: { item: DueCategory }) => (
-    <TouchableOpacity
-      style={[
-        styles.categoryCard,
-        selectedCategory?.id === item.id && styles.categoryCardSelected,
-      ]}
-      onPress={() => setSelectedCategory(item)}
-    >
-      <View style={styles.categoryHeader}>
-        <Text style={styles.categoryName}>{item.name}</Text>
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
-          <Text style={styles.statusText}>{item.status}</Text>
-        </View>
-      </View>
-      <Text style={styles.amount}>₦{item.amount.toLocaleString()}</Text>
-      <Text style={styles.dueDate}>Due: {item.dueDate}</Text>
-    </TouchableOpacity>
-  );
+  const handlePayment = () => {
+    if (selectedDues.length === 0) {
+      Alert.alert('Error', 'Please select at least one due to pay');
+      return;
+    }
 
-  const renderTransaction = ({ item }: { item: Transaction }) => (
-    <View style={styles.transactionCard}>
-      <View style={styles.transactionLeft}>
-        <Text style={styles.transactionType}>{item.type}</Text>
-        <Text style={styles.transactionDate}>{item.date}</Text>
-      </View>
-      <View style={styles.transactionRight}>
-        <Text style={styles.transactionAmount}>₦{item.amount.toLocaleString()}</Text>
-        <Text style={[styles.transactionStatus, { color: getStatusColor(item.status) }]}>
-          {item.status}
-        </Text>
-      </View>
-    </View>
-  );
+    const totalAmount = dues
+      .filter(due => selectedDues.includes(due.id))
+      .reduce((sum, due) => sum + due.amount, 0);
+
+    setPaymentAmount(totalAmount);
+    setShowSuccessModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowSuccessModal(false);
+    setSelectedDues([]);
+  };
+
+  const pendingDues = dues.filter(due => due.status === 'pending');
+  const paidDues = dues.filter(due => due.status === 'paid');
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor="#045555" />
-      
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Feather name="arrow-left" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Estate Dues</Text>
-        <TouchableOpacity>
-          <Feather name="help-circle" size={24} color="#fff" />
-        </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Due Categories */}
-        <Text style={styles.sectionTitle}>Outstanding Dues</Text>
-        <FlatList
-          data={dueCategories}
-          renderItem={renderDueCategory}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoriesContainer}
-        />
-
-        {/* Pay Button */}
-        {selectedCategory && (
-          <TouchableOpacity style={styles.payButton}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        {pendingDues.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Pending Dues</Text>
+            {pendingDues.map((due) => (
+              <TouchableOpacity
+                key={due.id}
+                style={styles.dueCard}
+                onPress={() => toggleDueSelection(due.id)}
+              >
+                <View style={styles.dueInfo}>
+                  <Text style={styles.dueTitle}>{due.title}</Text>
+                  <Text style={styles.dueAmount}>₦{due.amount.toLocaleString()}</Text>
+                  <Text style={styles.dueDate}>Due: {new Date(due.dueDate).toLocaleDateString()}</Text>
+                </View>
+                <View style={styles.checkbox}>
+                  {selectedDues.includes(due.id) && (
+                    <Feather name="check" size={20} color="#045555" />
+                  )}
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+        {selectedDues.length > 0 && (
+          <TouchableOpacity style={styles.payButton} onPress={handlePayment}>
             <Text style={styles.payButtonText}>
-              Pay ₦{selectedCategory.amount.toLocaleString()}
+              Pay ₦{dues
+                .filter(due => selectedDues.includes(due.id))
+                .reduce((sum, due) => sum + due.amount, 0)
+                .toLocaleString()}
             </Text>
+            <Feather name="arrow-right" size={20} color="#fff" />
           </TouchableOpacity>
         )}
-
-        {/* Transaction History */}
-        <View style={styles.transactionsSection}>
-          <Text style={styles.sectionTitle}>Payment History</Text>
-          <FlatList
-            data={transactions}
-            renderItem={renderTransaction}
-            keyExtractor={(item) => item.id}
-            scrollEnabled={false}
-          />
-        </View>
+        {paidDues.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Paid Dues</Text>
+            {paidDues.map((due) => (
+              <View key={due.id} style={[styles.dueCard, styles.paidCard]}>
+                <View style={styles.dueInfo}>
+                  <Text style={styles.dueTitle}>{due.title}</Text>
+                  <Text style={styles.dueAmount}>₦{due.amount.toLocaleString()}</Text>
+                  <Text style={styles.dueDate}>Paid on {new Date().toLocaleDateString()}</Text>
+                </View>
+                <View style={styles.paidBadge}>
+                  <Feather name="check-circle" size={20} color="#4CAF50" />
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
       </ScrollView>
+
+      <Modal
+        visible={showSuccessModal}
+        transparent
+        animationType="fade"
+        onRequestClose={handleCloseModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.successIconContainer}>
+              <Feather name="check-circle" size={50} color="#4CAF50" />
+            </View>
+            <Text style={styles.successTitle}>Payment Successful!</Text>
+            <View style={styles.receiptDetails}>
+              <View style={styles.receiptRow}>
+                <Text style={styles.receiptLabel}>Amount Paid</Text>
+                <Text style={styles.receiptValue}>₦{paymentAmount.toLocaleString()}</Text>
+              </View>
+              <View style={styles.receiptRow}>
+                <Text style={styles.receiptLabel}>Items</Text>
+                <Text style={styles.receiptValue}>{selectedDues.length} items</Text>
+              </View>
+              <View style={styles.selectedItems}>
+                {dues.filter(due => selectedDues.includes(due.id)).map(due => (
+                  <View key={due.id} style={styles.selectedItemRow}>
+                    <Text style={styles.selectedItemText}>{due.title}</Text>
+                    <Text style={styles.selectedItemAmount}>₦{due.amount.toLocaleString()}</Text>
+                  </View>
+                ))}
+              </View>
+              <View style={styles.receiptRow}>
+                <Text style={styles.receiptLabel}>Date</Text>
+                <Text style={styles.receiptValue}>
+                  {new Date().toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity
+              style={styles.doneButton}
+              onPress={handleCloseModal}
+            >
+              <Text style={styles.doneButtonText}>Done</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: '#045555',
   },
@@ -189,19 +217,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 20,
-    backgroundColor: '#045555',
+    padding: 40,
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#fff',
   },
-  content: {
+  container: {
     flex: 1,
     backgroundColor: '#f8f9fa',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
+  },
+  section: {
     padding: 20,
   },
   sectionTitle: {
@@ -210,114 +239,152 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 16,
   },
-  categoriesContainer: {
-    paddingRight: 20,
-  },
-  categoryCard: {
-    width: 300,
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 16,
-    marginRight: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  categoryCardSelected: {
-    borderColor: '#045555',
-    borderWidth: 2,
-  },
-  categoryHeader: {
+  dueCard: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
     marginBottom: 12,
+    alignItems: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3.84,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
-  categoryName: {
+  paidCard: {
+    opacity: 0.8,
+  },
+  dueInfo: {
+    flex: 1,
+  },
+  dueTitle: {
     fontSize: 16,
     fontWeight: '600',
     color: '#333',
-    flex: 1,
-    marginRight: 8,
+    marginBottom: 4,
   },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  statusText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '500',
-    textTransform: 'capitalize',
-  },
-  amount: {
-    fontSize: 24,
+  dueAmount: {
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#045555',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   dueDate: {
     fontSize: 14,
     color: '#666',
   },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderWidth: 2,
+    borderColor: '#045555',
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  paidBadge: {
+    marginLeft: 12,
+  },
   payButton: {
     backgroundColor: '#045555',
     borderRadius: 12,
-    padding: 16,
+    padding: 20,
+    flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 24,
-    marginBottom: 32,
+    justifyContent: 'center',
+    margin: 20,
+    gap: 8,
   },
   payButtonText: {
-    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#fff',
   },
-  transactionsSection: {
+  modalOverlay: {
     flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  transactionCard: {
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 24,
+    width: width - 48,
+    alignItems: 'center',
+  },
+  successIconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  successTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 24,
+  },
+  receiptDetails: {
+    width: '100%',
+    marginBottom: 24,
+  },
+  receiptRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
-  transactionLeft: {
-    flex: 1,
-  },
-  transactionType: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#333',
-    marginBottom: 4,
-  },
-  transactionDate: {
+  receiptLabel: {
     fontSize: 14,
     color: '#666',
   },
-  transactionRight: {
-    alignItems: 'flex-end',
-  },
-  transactionAmount: {
-    fontSize: 16,
-    fontWeight: 'bold',
+  receiptValue: {
+    fontSize: 14,
+    fontWeight: '600',
     color: '#333',
-    marginBottom: 4,
   },
-  transactionStatus: {
+  selectedItems: {
+    width: '100%',
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    padding: 12,
+    marginVertical: 12,
+  },
+  selectedItemRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  selectedItemText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  selectedItemAmount: {
     fontSize: 14,
     fontWeight: '500',
-    textTransform: 'capitalize',
+    color: '#333',
+  },
+  doneButton: {
+    backgroundColor: '#045555',
+    borderRadius: 12,
+    padding: 16,
+    width: '100%',
+    alignItems: 'center',
+  },
+  doneButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
   },
 });
 
