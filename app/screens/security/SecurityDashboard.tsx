@@ -1,8 +1,7 @@
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { BarCodeScanner } from 'expo-barcode-scanner';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
   Dimensions,
@@ -17,8 +16,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Scanner from '../../components/BarcodeScanner';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 // Mock data for visitors
 const mockVisitors = [
@@ -59,17 +59,9 @@ const SecurityDashboard = () => {
   const navigation = useNavigation<NavigationProp>();
   const [searchCode, setSearchCode] = useState('');
   const [visitors, setVisitors] = useState(mockVisitors);
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [showScanner, setShowScanner] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
-  }, []);
-
-  const handleBarCodeScanned = ({ data }: { data: string }) => {
+  const handleBarCodeScanned = (data: string) => {
     setShowScanner(false);
     setSearchCode(data);
     handleVerifyCode(data);
@@ -236,39 +228,23 @@ const SecurityDashboard = () => {
 
         <Modal
           visible={showScanner}
-          onRequestClose={() => setShowScanner(false)}
+          transparent={true}
           animationType="slide"
+          onRequestClose={() => setShowScanner(false)}
         >
-          <SafeAreaView style={styles.scannerContainer}>
-            <View style={styles.scannerHeader}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
               <TouchableOpacity
                 style={styles.closeButton}
                 onPress={() => setShowScanner(false)}
               >
                 <Feather name="x" size={24} color="#fff" />
               </TouchableOpacity>
-              <Text style={styles.scannerTitle}>Scan Visitor Code</Text>
-              <View style={{ width: 24 }} />
-            </View>
-            {hasPermission === null ? (
-              <Text style={styles.scannerText}>Requesting camera permission...</Text>
-            ) : hasPermission === false ? (
-              <Text style={styles.scannerText}>No access to camera</Text>
-            ) : (
-              <View style={styles.scanner}>
-                <BarCodeScanner
-                  onBarCodeScanned={handleBarCodeScanned}
-                  style={StyleSheet.absoluteFillObject}
-                />
-                <View style={styles.scannerOverlay}>
-                  <View style={styles.scannerTarget} />
-                </View>
+              <View style={styles.scannerContainer}>
+                <Scanner onCodeScanned={handleBarCodeScanned} />
               </View>
-            )}
-            <Text style={styles.scannerInstructions}>
-              Position the barcode within the frame to scan
-            </Text>
-          </SafeAreaView>
+            </View>
+          </View>
         </Modal>
       </View>
     </SafeAreaView>
@@ -460,54 +436,32 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-  scannerContainer: {
+  modalContainer: {
     flex: 1,
-    backgroundColor: '#000',
-  },
-  scannerHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 20,
-    backgroundColor: '#045555',
-  },
-  closeButton: {
-    padding: 4,
-  },
-  scannerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  scanner: {
-    flex: 1,
-    overflow: 'hidden',
-  },
-  scannerOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    width: width * 0.9,
+    height: height * 0.7,
+    overflow: 'hidden',
+  },
+  scannerContainer: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1,
+    padding: 8,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  scannerTarget: {
-    width: width * 0.7,
-    height: width * 0.7,
-    borderWidth: 2,
-    borderColor: '#fff',
-    borderRadius: 12,
-  },
-  scannerText: {
-    color: '#fff',
-    fontSize: 16,
-    textAlign: 'center',
-    margin: 20,
-  },
-  scannerInstructions: {
-    color: '#fff',
-    fontSize: 14,
-    textAlign: 'center',
-    padding: 20,
-    backgroundColor: '#045555',
+    borderRadius: 20,
   },
 });
 

@@ -1,4 +1,4 @@
-package com.accesscontrol
+package com.anonymous.access_control
 
 import android.app.Application
 import android.content.res.Configuration
