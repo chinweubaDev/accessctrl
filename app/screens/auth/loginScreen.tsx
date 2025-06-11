@@ -11,6 +11,8 @@ type RootStackParamList = {
   Register: undefined;
   ForgotPassword: undefined;
   Dashboard: undefined;
+  EstateAdminDashboard: undefined;
+  SecurityDashboard: undefined;
 };
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -168,7 +170,22 @@ const LoginScreen = () => {
                 <Text style={styles.signInText}>Sign In</Text>
               </TouchableOpacity>
               
-              {isBiometricSupported && (
+            
+            </View>
+
+            <View style={styles.registerContainer}>
+              <Text style={styles.registerText}>Don't have an account? </Text>
+              <TouchableOpacity 
+                activeOpacity={0.7}
+                onPress={() => handleNavigation('Register')}
+              >
+                <Text style={styles.registerLink}>Register</Text>
+              </TouchableOpacity>
+ 
+            </View>
+            <View style={{flexDirection:'column', justifyContent:'center', alignItems:'center', marginTop:20}}>
+              <Text style={{color:'#045555', fontSize:16, marginBottom:20, fontWeight:'bold'}}>OR</Text>
+            {isBiometricSupported && (
                 <TouchableOpacity 
                   style={[styles.fingerprintButton, isFingerPressed && styles.fingerprintButtonPressed]}
                   activeOpacity={0.7}
@@ -180,20 +197,28 @@ const LoginScreen = () => {
                 >
                   <Entypo 
                     name="fingerprint" 
-                    size={isFingerPressed ? 88 : 44} 
+                    size={isFingerPressed ? 50 : 50} 
                     color={isFingerPressed ? '#ff0000' : '#045555'} 
                   />
                 </TouchableOpacity>
               )}
             </View>
-
-            <View style={styles.registerContainer}>
-              <Text style={styles.registerText}>Don't have an account? </Text>
-              <TouchableOpacity 
+            <View style={{flexDirection:'row', gap:10, paddingVertical:20}}>
+            <TouchableOpacity 
+                style={styles.signInButton}
                 activeOpacity={0.7}
-                onPress={() => handleNavigation('Register')}
+                onPress={() => handleNavigation('EstateAdminDashboard')}
               >
-                <Text style={styles.registerLink}>Register</Text>
+                <Text style={styles.signInText}>Estate Admin In</Text>
+              </TouchableOpacity>
+
+              
+              <TouchableOpacity 
+                style={styles.signInButton}
+                activeOpacity={0.7}
+                onPress={() => handleNavigation('SecurityDashboard')}
+              >
+                <Text style={styles.signInText}>Secuirty In</Text>
               </TouchableOpacity>
             </View>
           </View>
